@@ -1,0 +1,303 @@
+<title>Bajar Música — YouTube en calidad nativa</title>
+<style>
+  :root{
+    --chassis:#181510;
+    --panel:#211d16;
+    --panel-2:#28231a;
+    --seam:#3c3527;
+    --seam-lit:#54492f;
+    --txt:#f0e9d8;
+    --txt-dim:#a89d84;
+    --txt-faint:#6f6551;
+    --rec:#ff7a3d;
+    --rec-dim:#8a4a2c;
+    --youtube:#ff0000;
+    --readout:#ffce6e;
+    --readout-glow:rgba(255,206,110,.35);
+    --good:#8fd88a;
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
+    --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --shadow-in: inset 0 1px 0 rgba(255,255,255,.03), inset 0 -1px 0 rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"]{
+    --chassis:#e7e1d2;
+    --panel:#f2ede1;
+    --panel-2:#e9e2d1;
+    --seam:#cabf9f;
+    --seam-lit:#b3a67e;
+    --txt:#2a2417;
+    --txt-dim:#6b5f45;
+    --txt-faint:#96896a;
+    --rec:#c2551f;
+    --rec-dim:#d99a6f;
+    --readout:#8a5a00;
+    --readout-glow:rgba(138,90,0,.18);
+    --good:#3f7d3a;
+    --shadow-in: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.06);
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --chassis:#e7e1d2;
+      --panel:#f2ede1;
+      --panel-2:#e9e2d1;
+      --seam:#cabf9f;
+      --seam-lit:#b3a67e;
+      --txt:#2a2417;
+      --txt-dim:#6b5f45;
+      --txt-faint:#96896a;
+      --rec:#c2551f;
+      --rec-dim:#d99a6f;
+      --readout:#8a5a00;
+      --readout-glow:rgba(138,90,0,.18);
+      --good:#3f7d3a;
+      --shadow-in: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.06);
+    }
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0}
+  .rack{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(255,122,61,.06), transparent 60%),
+      var(--chassis);
+    color:var(--txt);
+    font-family:var(--sans);
+    display:flex; justify-content:center;
+    padding:56px 18px 80px;
+  }
+  .unit{width:100%; max-width:600px}
+
+  .brand-row{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:6px;
+  }
+  .brand{
+    font-family:var(--serif); font-size:15px; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--txt-faint);
+  }
+  .led{
+    display:flex; align-items:center; gap:6px; font-family:var(--mono);
+    font-size:10.5px; letter-spacing:.08em; color:var(--txt-faint);
+  }
+  .led i{
+    width:7px; height:7px; border-radius:50%; background:var(--good);
+    box-shadow:0 0 6px var(--good); display:inline-block;
+  }
+
+  h1{
+    font-family:var(--serif); font-weight:400; font-style:italic;
+    font-size:clamp(30px,6vw,40px); line-height:1.08; margin:10px 0 10px;
+    text-wrap:balance; letter-spacing:-.01em;
+  }
+  h1 em, .yt{
+    font-style:normal; color:var(--youtube);
+  }
+  .dek{
+    font-size:14.5px; color:var(--txt-dim); line-height:1.6; margin:0 0 34px;
+    max-width:46ch;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--seam);
+    border-radius:10px;
+    box-shadow:var(--shadow-in), 0 18px 40px -20px rgba(0,0,0,.5);
+    padding:22px;
+    margin-bottom:18px;
+  }
+
+  .setup{list-style:none; margin:0; padding:0}
+  .setup li{
+    display:grid; grid-template-columns:28px 1fr; gap:14px;
+    padding:14px 0; border-bottom:1px solid var(--seam);
+  }
+  .setup li:last-child{border-bottom:none; padding-bottom:0}
+  .setup li:first-child{padding-top:0}
+  .tick{
+    font-family:var(--mono); font-size:11px; color:var(--txt-faint);
+    padding-top:2px; font-variant-numeric:tabular-nums;
+  }
+  .task-title{font-size:13.5px; font-weight:600; margin-bottom:3px}
+  .task-note{font-size:12px; color:var(--txt-dim); line-height:1.55; margin-bottom:10px}
+
+  .strip{
+    display:flex; align-items:stretch; gap:0;
+    background:var(--panel-2); border:1px solid var(--seam);
+    border-radius:6px; overflow:hidden;
+  }
+  .strip code{
+    flex:1; font-family:var(--mono); font-size:12px; color:var(--txt-dim);
+    padding:10px 12px; white-space:pre; overflow-x:auto; user-select:all;
+  }
+  .strip button{
+    flex:0 0 auto; border:none; border-left:1px solid var(--seam);
+    background:transparent; color:var(--txt-faint); font-family:var(--sans);
+    font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    padding:0 16px; cursor:pointer; transition:color .15s, background .15s;
+  }
+  .strip button:hover{color:var(--txt); background:rgba(255,255,255,.03)}
+  .strip button.copied{color:var(--good)}
+
+  .field{margin:30px 0 18px}
+  .field label{
+    display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+    color:var(--txt-faint); margin-bottom:9px; text-transform:uppercase;
+  }
+  .jack{
+    display:flex; align-items:center; gap:10px;
+    background:var(--panel); border:1px solid var(--seam-lit);
+    border-radius:8px; padding:4px 4px 4px 16px;
+    box-shadow:var(--shadow-in);
+  }
+  .jack svg{flex:0 0 auto; opacity:.5}
+  .jack input{
+    flex:1; background:transparent; border:none; outline:none;
+    color:var(--txt); font-family:var(--mono); font-size:14px; padding:12px 0;
+    min-width:0;
+  }
+  .jack input::placeholder{color:var(--txt-faint)}
+
+  .readout-wrap{
+    background:#0e0c08; border:1px solid var(--seam);
+    border-radius:8px; padding:16px 16px 14px;
+    box-shadow:var(--shadow-in);
+  }
+  :root[data-theme="light"] .readout-wrap,
+  @media (prefers-color-scheme: light){ .readout-wrap{ background:#fdf9ef; } }
+  .readout-label{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:8px;
+  }
+  .readout-label span{
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em; color:var(--txt-faint);
+    text-transform:uppercase;
+  }
+  .copy-btn{
+    border:1px solid var(--seam-lit); background:var(--panel-2); color:var(--txt);
+    font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:.05em;
+    text-transform:uppercase; padding:7px 16px; border-radius:5px; cursor:pointer;
+    transition:transform .08s, background .15s, border-color .15s;
+  }
+  .copy-btn:hover{background:var(--panel); border-color:var(--rec-dim)}
+  .copy-btn:active{transform:scale(.97)}
+  .copy-btn.copied{background:var(--good); border-color:var(--good); color:#0e0c08}
+  .readout{
+    font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--readout);
+    text-shadow:0 0 14px var(--readout-glow);
+    white-space:pre-wrap; word-break:break-all; min-height:1.6em;
+  }
+
+  .foot{
+    margin-top:30px; padding-top:20px; border-top:1px solid var(--seam);
+    font-size:11.5px; color:var(--txt-faint); line-height:1.7;
+  }
+  .foot a{color:var(--txt-dim)}
+
+  @media (prefers-reduced-motion: no-preference){
+    .panel, .jack{transition:border-color .2s}
+  }
+</style>
+
+<div class="rack">
+  <div class="unit">
+    <div class="brand-row">
+      <div class="brand">Unidad de Descarga</div>
+      <div class="led"><i></i>LOCAL — SIN SERVIDOR</div>
+    </div>
+    <h1>Bajá el audio tal como <em>YouTube</em> lo tiene.</h1>
+    <p class="dek">Sin páginas con anuncios, sin subir tu link a nadie. Corre en tu computadora, con una herramienta gratis y de código abierto. Se instala una sola vez.</p>
+
+    <div class="panel">
+      <ol class="setup">
+        <li>
+          <div class="tick">01</div>
+          <div>
+            <div class="task-title">Instalar Homebrew</div>
+            <div class="task-note">El instalador de programas de Mac. Si ya lo tenés, seguí al paso 2.</div>
+            <div class="strip">
+              <code id="cmd-brew">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code>
+              <button onclick="copyCmd('cmd-brew', this)">Copiar</button>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="tick">02</div>
+          <div>
+            <div class="task-title">Instalar yt-dlp</div>
+            <div class="task-note">El motor real de la descarga.</div>
+            <div class="strip">
+              <code id="cmd-install">brew install yt-dlp</code>
+              <button onclick="copyCmd('cmd-install', this)">Copiar</button>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="tick">03</div>
+          <div>
+            <div class="task-title">Guardá esta página</div>
+            <div class="task-note" style="margin-bottom:0">Cmd/Ctrl+D para tenerla siempre a mano. De acá en más, solo pegás el link.</div>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="field">
+      <label for="url">Link de <span class="yt">YouTube</span></label>
+      <div class="jack">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9.5 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg>
+        <input type="text" id="url" placeholder="https://youtube.com/watch?v=…" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="readout-wrap">
+      <div class="readout-label">
+        <span>Comando de descarga</span>
+        <button class="copy-btn" onclick="copyCmd('cmd-yt', this)">Copiar</button>
+      </div>
+      <div class="readout" id="cmd-yt"></div>
+    </div>
+
+    <div class="foot">
+      Mejor formato nativo disponible — sin recomprimir de más. El archivo cae en tu carpeta <b>Descargas</b>. Corre sobre <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noopener">yt-dlp</a>, gratis y de código abierto — esta página solo te evita acordarte del comando.
+    </div>
+  </div>
+</div>
+
+<script>
+  const urlInput = document.getElementById('url');
+  const cmdYt = document.getElementById('cmd-yt');
+
+  function render(){
+    const raw = urlInput.value.trim();
+    const url = raw || '<pegá el link acá>';
+    cmdYt.textContent = `yt-dlp -f bestaudio -x --audio-format best --audio-quality 0 --embed-thumbnail --add-metadata -o "$HOME/Downloads/%(title)s.%(ext)s" "${url}"`;
+  }
+
+  function copyCmd(id, btn){
+    const text = document.getElementById(id).textContent;
+    const done = () => {
+      const original = btn.textContent;
+      btn.textContent = 'Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+
+  function fallbackCopy(text, done){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+
+  urlInput.addEventListener('input', render);
+  render();
+</script>
